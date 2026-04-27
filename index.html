@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What's Wrong?</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --panel: #151922;
+      --panel-2: #1d2330;
+      --text: #f3f5f7;
+      --muted: #a5adba;
+      --muted-2: #747d8c;
+      --line: #2c3444;
+      --field: #0f131b;
+      --accent: #7dd3fc;
+      --accent-2: #a78bfa;
+      --good: #86efac;
+      --warn: #fbbf24;
+      --danger: #fb7185;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+      --radius-sm: 14px;
+      --max: 980px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top left, rgba(125, 211, 252, 0.08), transparent 38%), radial-gradient(circle at top right, rgba(167, 139, 250, 0.08), transparent 34%), var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      padding: 22px;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #05070b;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      box-shadow: 0 12px 40px rgba(125, 211, 252, 0.18);
+    }
+
+    .brand h1 {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      margin: 0;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .ghost,
+    .pill,
+    .primary,
+    .danger {
+      min-height: 42px;
+      border-radius: 999px;
+      padding: 0 16px;
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+
+    .primary {
+      background: var(--text);
+      color: #090b10;
+      border-color: var(--text);
+      font-weight: 800;
+    }
+
+    .danger {
+      color: #19070b;
+      background: var(--danger);
+      border-color: var(--danger);
+      font-weight: 800;
+    }
+
+    .ghost:hover,
+    .pill:hover {
+      border-color: rgba(125, 211, 252, 0.55);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sidebar,
+    .card {
+      background: rgba(21, 25, 34, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .sidebar {
+      padding: 18px;
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .meter-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .meter {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #0a0d12;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 220ms ease;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 14px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: left;
+    }
+
+    .step-item.active {
+      color: var(--text);
+      background: rgba(125, 211, 252, 0.08);
+      border-color: rgba(125, 211, 252, 0.28);
+    }
+
+    .step-item.done {
+      color: #d5f3ff;
+    }
+
+    .step-dot {
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #0b0e14;
+      border: 1px solid var(--line);
+      font-size: 0.72rem;
+      flex: 0 0 auto;
+    }
+
+    .step-item.done .step-dot {
+      background: rgba(134, 239, 172, 0.13);
+      border-color: rgba(134, 239, 172, 0.45);
+      color: var(--good);
+    }
+
+    .step-name {
+      font-size: 0.88rem;
+      line-height: 1.2;
+    }
+
+    .privacy-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(15, 19, 27, 0.9);
+      display: grid;
+      gap: 10px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .toggle-copy strong {
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    .toggle-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .switch {
+      width: 48px;
+      height: 28px;
+      flex: 0 0 auto;
+      padding: 3px;
+      border-radius: 999px;
+      background: #0a0d12;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+    }
+
+    .switch span {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--muted-2);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .switch.on span {
+      transform: translateX(20px);
+      background: var(--accent);
+    }
+
+    .card {
+      overflow: hidden;
+      min-height: 620px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .card-header {
+      padding: clamp(20px, 4vw, 34px) clamp(20px, 4vw, 42px) 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 900;
+      font-size: 0.76rem;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(125, 211, 252, 0.65);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(2rem, 7vw, 4.4rem);
+      line-height: 0.93;
+      letter-spacing: -0.075em;
+      max-width: 840px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+      max-width: 760px;
+      font-size: clamp(1rem, 2vw, 1.12rem);
+    }
+
+    .card-body {
+      padding: 8px clamp(20px, 4vw, 42px) 24px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .field-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    textarea,
+    input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px 17px;
+      outline: 0;
+      resize: vertical;
+    }
+
+    textarea {
+      min-height: 210px;
+      line-height: 1.55;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus {
+      border-color: rgba(125, 211, 252, 0.72);
+      box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.1);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      min-height: 42px;
+      border-radius: 999px;
+      padding: 0 14px;
+      color: var(--muted);
+      background: var(--field);
+      border: 1px solid var(--line);
+    }
+
+    .chip.selected {
+      color: #05070b;
+      background: var(--accent);
+      border-color: var(--accent);
+      font-weight: 900;
+    }
+
+    .slider-card {
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .slider-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      align-items: baseline;
+    }
+
+    .slider-number {
+      color: var(--text);
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .microcopy {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .callout {
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      background: rgba(251, 191, 36, 0.08);
+      color: #ffe7a0;
+      border-radius: 20px;
+      padding: 14px 16px;
+      line-height: 1.5;
+      font-size: 0.94rem;
+    }
+
+    .soft-box {
+      border: 1px solid var(--line);
+      background: rgba(15, 19, 27, 0.68);
+      border-radius: 20px;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .soft-box h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .soft-box p,
+    .soft-box ul {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .soft-box ul {
+      padding-left: 20px;
+    }
+
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .radio-card {
+      color: var(--text);
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 14px;
+      display: grid;
+      gap: 8px;
+      text-align: left;
+      min-height: 96px;
+    }
+
+    .radio-card strong {
+      font-size: 1.1rem;
+    }
+
+    .radio-card span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .radio-card.selected {
+      border-color: var(--accent);
+      background: rgba(125, 211, 252, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.25);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .action-choice {
+      color: var(--text);
+      text-align: left;
+      border-radius: 18px;
+      background: var(--field);
+      border: 1px solid var(--line);
+      padding: 16px;
+      min-height: 76px;
+      line-height: 1.35;
+    }
+
+    .action-choice.selected {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.72);
+    }
+
+    .summary {
+      display: grid;
+      gap: 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .score-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--field);
+      padding: 15px;
+    }
+
+    .score-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+    }
+
+    .score-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    .reflection-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(15, 19, 27, 0.72);
+      padding: 17px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .reflection-card h3 {
+      margin: 0;
+      color: var(--accent);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .reflection-card p {
+      margin: 0;
+      white-space: pre-wrap;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(13, 15, 20, 0.54);
+      padding: 16px clamp(20px, 4vw, 42px);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-left,
+    .footer-right {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .fade {
+      animation: fade 180ms ease both;
+    }
+
+    .history-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.68);
+      padding: 22px;
+      overflow: auto;
+    }
+
+    .history-panel.open {
+      display: grid;
+      place-items: start center;
+    }
+
+    .history-card {
+      width: min(860px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .history-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .history-head h2 {
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .history-item {
+      background: var(--field);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-item strong {
+      color: var(--text);
+    }
+
+    .history-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--text);
+      color: #080a0f;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+      z-index: 30;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 14px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .step-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .split,
+      .radio-grid,
+      .action-grid,
+      .score-row {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .step-list {
+        grid-template-columns: 1fr;
+      }
+
+      .brand p {
+        white-space: normal;
+      }
+
+      .card {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">?</div>
+        <div>
+          <h1>What's Wrong?</h1>
+          <p>A private thought-spiral breaker for getting lighter.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="ghost" id="historyButton" type="button">History</button>
+        <button class="ghost" id="exportButton" type="button">Export</button>
+        <button class="primary" id="newButton" type="button">New session</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <aside class="sidebar" aria-label="Session progress">
+        <div class="meter-wrap">
+          <div class="meter-label">
+            <span>Progress</span>
+            <strong id="progressLabel">0%</strong>
+          </div>
+          <div class="meter" aria-hidden="true">
+            <div class="meter-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="step-list" id="stepList"></div>
+
+        <div class="privacy-box">
+          <div class="toggle-row">
+            <div class="toggle-copy">
+              <strong>Private mode</strong>
+              <span>When on, this session is not saved to history.</span>
+            </div>
+            <button class="switch" id="privateToggle" type="button" aria-pressed="false"><span></span></button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="card" aria-live="polite">
+        <div class="card-header">
+          <div class="eyebrow" id="eyebrow">Step 1</div>
+          <h2 class="title" id="stepTitle"></h2>
+          <p class="subtitle" id="stepSubtitle"></p>
+        </div>
+        <div class="card-body fade" id="stepBody"></div>
+        <div class="card-footer">
+          <div class="footer-left">
+            <button class="ghost" id="backButton" type="button">Back</button>
+            <button class="ghost" id="skipButton" type="button">Skip</button>
+          </div>
+          <div class="footer-right">
+            <button class="primary" id="nextButton" type="button">Next</button>
+            <button class="primary hidden" id="finishButton" type="button">Save session</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <section class="history-panel" id="historyPanel" aria-modal="true" role="dialog" aria-label="History">
+    <div class="history-card">
+      <div class="history-head">
+        <h2>Session history</h2>
+        <button class="ghost" id="closeHistoryButton" type="button">Close</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+      <button class="danger" id="clearHistoryButton" type="button">Clear history</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "whatsWrongAppStateV1";
+    const HISTORY_KEY = "whatsWrongHistoryV1";
+
+    const steps = [
+      {
+        id: "raw",
+        name: "Dump it",
+        title: "What’s wrong?",
+        subtitle: "Write the raw version. Do not polish it. Do not make it reasonable. Put the spiral on the table.",
+        type: "textarea",
+        label: "What is your mind saying is wrong right now?",
+        placeholder: "Example: They didn’t reply, and now I feel like I did something wrong or they’re pulling away..."
+      },
+      {
+        id: "emotion",
+        name: "Name it",
+        title: "What emotion is driving this?",
+        subtitle: "Pick the closest emotional charge and rate how intense it feels right now.",
+        type: "emotion"
+      },
+      {
+        id: "claim",
+        name: "Claim",
+        title: "What is the thought claiming?",
+        subtitle: "Turn the vague feeling into a clear sentence. A clear thought can be examined. A cloud cannot.",
+        type: "textarea",
+        label: "The scary claim is...",
+        placeholder: "Example: They are ignoring me because I’m not important to them."
+      },
+      {
+        id: "factsStory",
+        name: "Facts vs story",
+        title: "Separate the facts from the story.",
+        subtitle: "Facts are what a camera, transcript, or timestamp could verify. Story is the meaning your mind is adding.",
+        type: "split"
+      },
+      {
+        id: "rejection",
+        name: "Sensitivity check",
+        title: "Is rejection sensitivity involved?",
+        subtitle: "This does not mean the feeling is fake. It means the volume knob may be turned up.",
+        type: "rejection"
+      },
+      {
+        id: "alternatives",
+        name: "Alternatives",
+        title: "Give three boring explanations.",
+        subtitle: "Find explanations that do not require you to be hated, rejected, doomed, or defective.",
+        type: "three",
+        labels: ["Boring explanation 1", "Boring explanation 2", "Boring explanation 3"],
+        placeholders: ["Example: They are busy.", "Example: They saw it and forgot to reply.", "Example: They are dealing with their own stress."]
+      },
+      {
+        id: "friend",
+        name: "Friend mode",
+        title: "What would you tell a friend?",
+        subtitle: "Answer as if someone you care about came to you with the exact same fear.",
+        type: "textarea",
+        label: "I would tell them...",
+        placeholder: "Example: You don’t actually know they meant it that way. You’re hurt, but you need more evidence before treating this like rejection."
+      },
+      {
+        id: "thirdPerson",
+        name: "Distance",
+        title: "Now create distance.",
+        subtitle: "Rewrite the response using your name or “this person” instead of “I.” It may feel odd. That is the point.",
+        type: "textarea",
+        label: "Distanced version",
+        placeholder: "Example: Bumba is feeling rejected right now, but he does not actually know that this person intended to reject him."
+      },
+      {
+        id: "balanced",
+        name: "Balanced thought",
+        title: "What is still true, but less dramatic?",
+        subtitle: "Do not force positivity. Write the most accurate, proportionate version of the situation.",
+        type: "textarea",
+        label: "A more balanced thought is...",
+        placeholder: "Example: I feel ignored, and that hurts. But I don’t have enough evidence that this means rejection. I can wait, ask calmly, or let the uncertainty exist."
+      },
+      {
+        id: "action",
+        name: "Tiny action",
+        title: "Choose one small action.",
+        subtitle: "Pick something that helps without feeding the spiral.",
+        type: "action"
+      },
+      {
+        id: "rerate",
+        name: "Re-rate",
+        title: "How intense is it now?",
+        subtitle: "The goal is not to magically solve the situation. The goal is to give your nervous system more room.",
+        type: "rerate"
+      },
+      {
+        id: "summary",
+        name: "Summary",
+        title: "You made the thought smaller.",
+        subtitle: "Here is the session distilled into something you can keep, export, or leave behind.",
+        type: "summary"
+      }
+    ];
+
+    const emotions = ["rejected", "embarrassed", "afraid", "abandoned", "disrespected", "guilty", "ashamed", "unsafe", "jealous", "uncertain", "angry", "lonely"];
+    const actions = ["Wait 30 minutes", "Take a walk", "Drink water", "Write it but do not send it", "Ask calmly", "Do one useful task for 10 minutes", "Sleep on it", "Let it remain uncertain", "Message a trusted person", "Breathe for two minutes"];
+
+    let state = loadState();
+
+    const stepList = document.getElementById("stepList");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressFill = document.getElementById("progressFill");
+    const eyebrow = document.getElementById("eyebrow");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepSubtitle = document.getElementById("stepSubtitle");
+    const stepBody = document.getElementById("stepBody");
+    const backButton = document.getElementById("backButton");
+    const nextButton = document.getElementById("nextButton");
+    const skipButton = document.getElementById("skipButton");
+    const finishButton = document.getElementById("finishButton");
+    const newButton = document.getElementById("newButton");
+    const exportButton = document.getElementById("exportButton");
+    const historyButton = document.getElementById("historyButton");
+    const historyPanel = document.getElementById("historyPanel");
+    const historyList = document.getElementById("historyList");
+    const closeHistoryButton = document.getElementById("closeHistoryButton");
+    const clearHistoryButton = document.getElementById("clearHistoryButton");
+    const privateToggle = document.getElementById("privateToggle");
+    const toast = document.getElementById("toast");
+
+    function blankAnswers() {
+      return {
+        raw: "",
+        emotion: "",
+        customEmotion: "",
+        intensityStart: 70,
+        claim: "",
+        facts: "",
+        story: "",
+        rejection: "Maybe",
+        rejectionReflection: "",
+        alternatives: ["", "", ""],
+        friend: "",
+        thirdPerson: "",
+        balanced: "",
+        action: "",
+        customAction: "",
+        intensityEnd: 35
+      };
+    }
+
+    function defaultState() {
+      return {
+        currentStep: 0,
+        privateMode: false,
+        createdAt: new Date().toISOString(),
+        answers: blankAnswers()
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        return {
+          ...defaultState(),
+          ...parsed,
+          answers: {
+            ...blankAnswers(),
+            ...(parsed.answers || {})
+          }
+        };
+      } catch {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(history) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function render() {
+      const step = steps[state.currentStep];
+      const progress = Math.round((state.currentStep / (steps.length - 1)) * 100);
+
+      progressLabel.textContent = `${progress}%`;
+      progressFill.style.width = `${progress}%`;
+      eyebrow.textContent = `Step ${state.currentStep + 1} of ${steps.length}`;
+      stepTitle.textContent = step.title;
+      stepSubtitle.textContent = step.subtitle;
+
+      backButton.disabled = state.currentStep === 0;
+      backButton.style.opacity = state.currentStep === 0 ? "0.45" : "1";
+      skipButton.classList.toggle("hidden", step.id === "summary");
+      nextButton.classList.toggle("hidden", step.id === "summary");
+      finishButton.classList.toggle("hidden", step.id !== "summary");
+      privateToggle.classList.toggle("on", state.privateMode);
+      privateToggle.setAttribute("aria-pressed", String(state.privateMode));
+
+      renderSteps();
+      renderBody(step);
+      saveState();
+    }
+
+    function renderSteps() {
+      stepList.innerHTML = "";
+      steps.forEach((step, index) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "step-item";
+        if (index === state.currentStep) item.classList.add("active");
+        if (index < state.currentStep) item.classList.add("done");
+        item.innerHTML = `<span class="step-dot">${index < state.currentStep ? "✓" : index + 1}</span><span class="step-name">${escapeHtml(step.name)}</span>`;
+        item.addEventListener("click", () => {
+          state.currentStep = index;
+          render();
+        });
+        stepList.appendChild(item);
+      });
+    }
+
+    function renderBody(step) {
+      stepBody.classList.remove("fade");
+      void stepBody.offsetWidth;
+      stepBody.classList.add("fade");
+
+      if (step.type === "textarea") renderTextarea(step);
+      if (step.type === "emotion") renderEmotion();
+      if (step.type === "split") renderSplit();
+      if (step.type === "rejection") renderRejection();
+      if (step.type === "three") renderThree(step);
+      if (step.type === "action") renderAction();
+      if (step.type === "rerate") renderRerate();
+      if (step.type === "summary") renderSummary();
+    }
+
+    function renderTextarea(step) {
+      const value = state.answers[step.id] || "";
+      stepBody.innerHTML = `
+        <div class="field-stack">
+          <label for="field-${step.id}">${escapeHtml(step.label)}</label>
+          <textarea id="field-${step.id}" placeholder="${escapeHtml(step.placeholder)}">${escapeHtml(value)}</textarea>
+        </div>
+        <div class="soft-box">
+          <h3>Rule</h3>
+          <p>Write what is actually there. The app is not grading your answer. Getting it out of your head is the point.</p>
+        </div>
+      `;
+      const field = document.getElementById(`field-${step.id}`);
+      field.addEventListener("input", () => {
+        state.answers[step.id] = field.value;
+        saveState();
+      });
+      field.focus({ preventScroll: true });
+    }
+
+    function renderEmotion() {
+      stepBody.innerHTML = `
+        <div class="field-stack">
+          <label>Closest emotion</label>
+          <div class="chips" id="emotionChips"></div>
+          <input id="customEmotion" type="text" placeholder="Or type your own emotion" value="${escapeHtml(state.answers.customEmotion)}">
+        </div>
+        <div class="slider-card">
+          <div class="slider-head">
+            <span>Starting intensity</span>
+            <strong class="slider-number" id="startIntensityLabel">${state.answers.intensityStart}</strong>
+          </div>
+          <input id="startIntensity" type="range" min="0" max="100" value="${state.answers.intensityStart}">
+          <p class="microcopy">0 means calm. 100 means fully flooded.</p>
+        </div>
+      `;
+
+      const chips = document.getElementById("emotionChips");
+      emotions.forEach((emotion) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip";
+        if (state.answers.emotion === emotion) button.classList.add("selected");
+        button.textContent = emotion;
+        button.addEventListener("click", () => {
+          state.answers.emotion = emotion;
+          render();
+        });
+        chips.appendChild(button);
+      });
+
+      const customEmotion = document.getElementById("customEmotion");
+      customEmotion.addEventListener("input", () => {
+        state.answers.customEmotion = customEmotion.value;
+        if (customEmotion.value.trim()) state.answers.emotion = "";
+        saveState();
+      });
+
+      const slider = document.getElementById("startIntensity");
+      const label = document.getElementById("startIntensityLabel");
+      slider.addEventListener("input", () => {
+        state.answers.intensityStart = Number(slider.value);
+        label.textContent = slider.value;
+        saveState();
+      });
+    }
+
+    function renderSplit() {
+      stepBody.innerHTML = `
+        <div class="split">
+          <div class="field-stack">
+            <label for="facts">Facts I actually know</label>
+            <textarea id="facts" placeholder="Example: I sent a text at 2:13 PM. They have not replied yet.">${escapeHtml(state.answers.facts)}</textarea>
+          </div>
+          <div class="field-stack">
+            <label for="story">Story my mind is adding</label>
+            <textarea id="story" placeholder="Example: They must be annoyed with me. This means I matter less to them.">${escapeHtml(state.answers.story)}</textarea>
+          </div>
+        </div>
+        <div class="callout">If the sentence requires mind-reading, fortune-telling, or global meaning, it belongs in the story column.</div>
+      `;
+      document.getElementById("facts").addEventListener("input", (event) => {
+        state.answers.facts = event.target.value;
+        saveState();
+      });
+      document.getElementById("story").addEventListener("input", (event) => {
+        state.answers.story = event.target.value;
+        saveState();
+      });
+    }
+
+    function renderRejection() {
+      const choices = [
+        { value: "Yes", copy: "This is probably about feeling rejected, excluded, judged, ignored, or replaced." },
+        { value: "Maybe", copy: "There may be a rejection-sensitive layer, but I am not certain." },
+        { value: "No", copy: "This seems driven by something else." }
+      ];
+
+      stepBody.innerHTML = `
+        <div class="radio-grid" id="rejectionChoices"></div>
+        <div class="field-stack" id="rejectionReflectionWrap">
+          <label for="rejectionReflection">If the volume knob was turned up by rejection sensitivity, what might be exaggerated?</label>
+          <textarea id="rejectionReflection" placeholder="Example: The hurt is real, but the conclusion that I’m unwanted may be too strong.">${escapeHtml(state.answers.rejectionReflection)}</textarea>
+        </div>
+      `;
+
+      const wrap = document.getElementById("rejectionChoices");
+      choices.forEach((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "radio-card";
+        if (state.answers.rejection === choice.value) button.classList.add("selected");
+        button.innerHTML = `<strong>${choice.value}</strong><span>${escapeHtml(choice.copy)}</span>`;
+        button.addEventListener("click", () => {
+          state.answers.rejection = choice.value;
+          render();
+        });
+        wrap.appendChild(button);
+      });
+
+      document.getElementById("rejectionReflection").addEventListener("input", (event) => {
+        state.answers.rejectionReflection = event.target.value;
+        saveState();
+      });
+    }
+
+    function renderThree(step) {
+      stepBody.innerHTML = `
+        <div class="field-stack">
+          ${step.labels.map((label, index) => `
+            <div class="field-stack">
+              <label for="alt-${index}">${escapeHtml(label)}</label>
+              <input id="alt-${index}" type="text" value="${escapeHtml(state.answers.alternatives[index] || "")}" placeholder="${escapeHtml(step.placeholders[index])}">
+            </div>
+          `).join("")}
+        </div>
+        <div class="soft-box">
+          <h3>Do not make them flattering.</h3>
+          <p>The best alternatives are boring. Anxiety prefers dramatic explanations because dramatic explanations feel like certainty.</p>
+        </div>
+      `;
+
+      state.answers.alternatives.forEach((_, index) => {
+        document.getElementById(`alt-${index}`).addEventListener("input", (event) => {
+          state.answers.alternatives[index] = event.target.value;
+          saveState();
+        });
+      });
+    }
+
+    function renderAction() {
+      stepBody.innerHTML = `
+        <div class="action-grid" id="actionChoices"></div>
+        <div class="field-stack">
+          <label for="customAction">Or write your own small action</label>
+          <input id="customAction" type="text" value="${escapeHtml(state.answers.customAction)}" placeholder="Example: Put the phone away and make tea.">
+        </div>
+      `;
+
+      const wrap = document.getElementById("actionChoices");
+      actions.forEach((action) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "action-choice";
+        if (state.answers.action === action) button.classList.add("selected");
+        button.textContent = action;
+        button.addEventListener("click", () => {
+          state.answers.action = action;
+          state.answers.customAction = "";
+          render();
+        });
+        wrap.appendChild(button);
+      });
+
+      document.getElementById("customAction").addEventListener("input", (event) => {
+        state.answers.customAction = event.target.value;
+        if (event.target.value.trim()) state.answers.action = "";
+        saveState();
+      });
+    }
+
+    function renderRerate() {
+      const start = Number(state.answers.intensityStart || 0);
+      const end = Number(state.answers.intensityEnd || 0);
+      const change = start - end;
+      const changeText = change > 0 ? `${change} points lighter` : change < 0 ? `${Math.abs(change)} points heavier` : "unchanged";
+
+      stepBody.innerHTML = `
+        <div class="slider-card">
+          <div class="slider-head">
+            <span>Current intensity</span>
+            <strong class="slider-number" id="endIntensityLabel">${end}</strong>
+          </div>
+          <input id="endIntensity" type="range" min="0" max="100" value="${end}">
+          <p class="microcopy">Started at ${start}. Right now: ${changeText}.</p>
+        </div>
+        <div class="soft-box">
+          <h3>What changed?</h3>
+          <p>You may still dislike the situation. That is fine. The win is that the thought has been named, questioned, and made less absolute.</p>
+        </div>
+      `;
+
+      const slider = document.getElementById("endIntensity");
+      const label = document.getElementById("endIntensityLabel");
+      slider.addEventListener("input", () => {
+        state.answers.intensityEnd = Number(slider.value);
+        label.textContent = slider.value;
+        saveState();
+        renderRerate();
+      });
+    }
+
+    function renderSummary() {
+      const start = Number(state.answers.intensityStart || 0);
+      const end = Number(state.answers.intensityEnd || 0);
+      const delta = start - end;
+      const action = state.answers.customAction || state.answers.action || "No action chosen";
+      const emotion = state.answers.customEmotion || state.answers.emotion || "Not named";
+
+      stepBody.innerHTML = `
+        <div class="summary">
+          <div class="score-row">
+            <div class="score-card"><span>Started</span><strong>${start}</strong></div>
+            <div class="score-card"><span>Now</span><strong>${end}</strong></div>
+            <div class="score-card"><span>Change</span><strong>${delta > 0 ? "-" + delta : delta === 0 ? "0" : "+" + Math.abs(delta)}</strong></div>
+          </div>
+          <div class="reflection-card"><h3>Emotion</h3><p>${escapeHtml(emotion)}</p></div>
+          <div class="reflection-card"><h3>The scary claim</h3><p>${escapeHtml(state.answers.claim || "Not written")}</p></div>
+          <div class="reflection-card"><h3>Facts</h3><p>${escapeHtml(state.answers.facts || "Not written")}</p></div>
+          <div class="reflection-card"><h3>Story</h3><p>${escapeHtml(state.answers.story || "Not written")}</p></div>
+          <div class="reflection-card"><h3>Balanced thought</h3><p>${escapeHtml(state.answers.balanced || "Not written")}</p></div>
+          <div class="reflection-card"><h3>Tiny action</h3><p>${escapeHtml(action)}</p></div>
+          <div class="callout">This tool is for reflection, not diagnosis or crisis care. If you may hurt yourself or someone else, contact local emergency services or a crisis line now.</div>
+        </div>
+      `;
+    }
+
+    function next() {
+      if (state.currentStep < steps.length - 1) {
+        state.currentStep += 1;
+        render();
+      }
+    }
+
+    function back() {
+      if (state.currentStep > 0) {
+        state.currentStep -= 1;
+        render();
+      }
+    }
+
+    function newSession() {
+      state = defaultState();
+      render();
+      showToast("Started a new session.");
+    }
+
+    function sessionTitle(session) {
+      const raw = session.answers.raw || session.answers.claim || "Untitled session";
+      return raw.length > 72 ? `${raw.slice(0, 72)}...` : raw;
+    }
+
+    function saveCurrentSession() {
+      if (state.privateMode) {
+        showToast("Private mode is on. Session was not saved.");
+        return;
+      }
+
+      const history = loadHistory();
+      const session = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        savedAt: new Date().toISOString(),
+        createdAt: state.createdAt,
+        answers: state.answers
+      };
+      history.unshift(session);
+      saveHistory(history.slice(0, 50));
+      showToast("Session saved.");
+    }
+
+    function formatDate(value) {
+      return new Date(value).toLocaleString([], {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function markdownForSession(sessionState) {
+      const answers = sessionState.answers;
+      const emotion = answers.customEmotion || answers.emotion || "";
+      const action = answers.customAction || answers.action || "";
+      const alternatives = (answers.alternatives || []).filter(Boolean).map((item) => `- ${item}`).join("\n");
+
+      return `# What's Wrong? Reflection\n\nDate: ${formatDate(new Date().toISOString())}\n\n## Raw thought\n${answers.raw || ""}\n\n## Emotion\n${emotion}\n\nStarting intensity: ${answers.intensityStart}\nEnding intensity: ${answers.intensityEnd}\n\n## Scary claim\n${answers.claim || ""}\n\n## Facts I actually know\n${answers.facts || ""}\n\n## Story my mind is adding\n${answers.story || ""}\n\n## Rejection sensitivity check\n${answers.rejection || ""}\n\n${answers.rejectionReflection || ""}\n\n## Boring alternative explanations\n${alternatives}\n\n## Friend mode\n${answers.friend || ""}\n\n## Distanced version\n${answers.thirdPerson || ""}\n\n## Balanced thought\n${answers.balanced || ""}\n\n## Tiny action\n${action}\n`;
+    }
+
+    function exportMarkdown() {
+      const markdown = markdownForSession(state);
+      const blob = new Blob([markdown], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `whats-wrong-${new Date().toISOString().slice(0, 10)}.md`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("Exported markdown.");
+    }
+
+    function renderHistory() {
+      const history = loadHistory();
+      if (!history.length) {
+        historyList.innerHTML = `<div class="history-item"><strong>No saved sessions yet.</strong><p>Finish a session with private mode off to save it here.</p></div>`;
+        return;
+      }
+
+      historyList.innerHTML = history.map((session, index) => {
+        const start = Number(session.answers.intensityStart || 0);
+        const end = Number(session.answers.intensityEnd || 0);
+        const delta = start - end;
+        return `
+          <div class="history-item">
+            <strong>${escapeHtml(sessionTitle(session))}</strong>
+            <p>${formatDate(session.savedAt)} · ${start} → ${end} · ${delta > 0 ? delta + " points lighter" : delta === 0 ? "unchanged" : Math.abs(delta) + " points heavier"}</p>
+            <div class="top-actions">
+              <button class="ghost" type="button" data-load-history="${index}">Load</button>
+              <button class="ghost" type="button" data-export-history="${index}">Export</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      historyList.querySelectorAll("[data-load-history]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const session = history[Number(button.dataset.loadHistory)];
+          state = {
+            currentStep: steps.length - 1,
+            privateMode: false,
+            createdAt: session.createdAt || new Date().toISOString(),
+            answers: {
+              ...blankAnswers(),
+              ...session.answers
+            }
+          };
+          historyPanel.classList.remove("open");
+          render();
+          showToast("Loaded session.");
+        });
+      });
+
+      historyList.querySelectorAll("[data-export-history]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const session = history[Number(button.dataset.exportHistory)];
+          const markdown = markdownForSession({ answers: session.answers });
+          const blob = new Blob([markdown], { type: "text/markdown" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `whats-wrong-history-${index}.md`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+        });
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
+    }
+
+    backButton.addEventListener("click", back);
+    nextButton.addEventListener("click", next);
+    skipButton.addEventListener("click", next);
+    newButton.addEventListener("click", newSession);
+    exportButton.addEventListener("click", exportMarkdown);
+    finishButton.addEventListener("click", saveCurrentSession);
+
+    privateToggle.addEventListener("click", () => {
+      state.privateMode = !state.privateMode;
+      render();
+      showToast(state.privateMode ? "Private mode on." : "Private mode off.");
+    });
+
+    historyButton.addEventListener("click", () => {
+      renderHistory();
+      historyPanel.classList.add("open");
+    });
+
+    closeHistoryButton.addEventListener("click", () => {
+      historyPanel.classList.remove("open");
+    });
+
+    historyPanel.addEventListener("click", (event) => {
+      if (event.target === historyPanel) historyPanel.classList.remove("open");
+    });
+
+    clearHistoryButton.addEventListener("click", () => {
+      if (!confirm("Clear all saved sessions?")) return;
+      saveHistory([]);
+      renderHistory();
+      showToast("History cleared.");
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") historyPanel.classList.remove("open");
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") next();
+    });
+
+    render();
+  </script>
+</body>
+</html>
